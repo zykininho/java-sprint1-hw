@@ -1,25 +1,39 @@
+import java.util.Map;
+
 public class StepTracker {
 
-    int targetNumberOfSteps = 10000;
-
+    int targetNumberOfSteps;
+    int[][] monthToData;
     Converter converter = new Converter();
 
-    int[][] monthToData;
-
     public StepTracker() {
-        monthToData = new int[12][30];
-        for (int i = 0; i < monthToData.length; i++) {
-            for (int j = 0; j < monthToData[i].length; j++) {
-                monthToData[i][j] = 0;
-            }
-        }
+        this.targetNumberOfSteps = 10000;
+        this.monthToData = new int[12][30];
+        // Удалил цикл по заполнению значений, система при инициализации объекта и так заполняет
+        // его значениями по-умолчанию: для int проставит 0, проверил через Debug
     }
 
-    void saveStepsAtDay(int month, int day, int steps) {
+    void saveStepsAtDay(Map dataSteps) {
+
+        int month = 0;
+        int day = 1;
+        int steps = 0;
+
+        if (dataSteps.containsKey("month")) {
+            month = (int) dataSteps.get("month");
+        } else return;
+        if (dataSteps.containsKey("day")) {
+            day = (int) dataSteps.get("day");
+        } else return;
+        if (dataSteps.containsKey("steps")) {
+            steps = (int) dataSteps.get("steps");
+        } else return;
+
         if (steps < 0) {
             System.out.println("Количество шагов должно быть положительным");
             return;
         }
+
         monthToData[month][day - 1] = steps;
         System.out.println("Количество шагов за день успешно сохранено");
     }
@@ -37,7 +51,7 @@ public class StepTracker {
 
         /* Максимальное количество подряд идущих дней,
          в течение которых количество шагов за день было равно или выше целевого*/
-        System.out.println("Лучшая серия в днях: " + getSeriesOfTargetDays(month));
+        System.out.println("Лучшая серия в днях: " + bestSeries(month));
 
     }
 
@@ -95,7 +109,7 @@ public class StepTracker {
         return calories;
     }
 
-    int getSeriesOfTargetDays(int month) {
+    int bestSeries(int month) {
         int maxSeriesOfDays = 0;
         int seriesOfDays = 0;
 
